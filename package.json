@@ -1,0 +1,39 @@
+{
+  "name": "ai-software-archaeologist",
+  "version": "1.0.0",
+  "description": "Enterprise Legacy Software Intelligence Platform - Understand legacy codebases like discovering ancient civilizations",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspaces",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "db:migrate": "npm run db:migrate --workspace=backend",
+    "db:seed": "npm run db:seed --workspace=backend",
+    "db:studio": "npm run db:studio --workspace=backend"
+  },
+  "keywords": [
+    "ai",
+    "legacy-code",
+    "code-analysis",
+    "documentation",
+    "architecture",
+    "technical-debt",
+    "developer-tools",
+    "ibm-bob"
+  ],
+  "author": "AI Software Archaeologist Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

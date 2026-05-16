@@ -1,0 +1,471 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  name          String?
+  avatar        String?
+  role          UserRole @default(USER)
+  
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  lastLoginAt   DateTime? @map("last_login_at")
+  
+  // Relations
+  repositories       Repository[]
+  chatConversations  ChatConversation[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// ============================================
+// REPOSITORY MANAGEMENT
+// ============================================
+
+model Repository {
+  id          String           @id @default(uuid())
+  userId      String           @map("user_id")
+  name        String
+  description String?
+  sourceType  RepositorySource @map("source_type")
+  sourceUrl   String?          @map("source_url")
+  filePath    String           @map("file_path")
+  status      RepositoryStatus @default(PROCESSING)
+  
+  // Metadata stored as JSON
+  metadata    Json?            // { languages, frameworks, fileCount, totalLines, etc. }
+  
+  // Timestamps
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  processedAt DateTime?        @map("processed_at")
+  
+  // Relations
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses            Analysis[]
+  chatConversations   ChatConversation[]
+  architectureMaps    ArchitectureMap[]
+  debtReports         TechnicalDebtReport[]
+  generatedDocs       GeneratedDocumentation[]
+  onboardingPaths     OnboardingPath[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("repositories")
+}
+
+enum RepositorySource {
+  ZIP
+  GITHUB
+  GITLAB
+  BITBUCKET
+}
+
+enum RepositoryStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+  ARCHIVED
+}
+
+// ============================================
+// ANALYSIS SYSTEM
+// ============================================
+
+model Analysis {
+  id           String         @id @default(uuid())
+  repositoryId String         @map("repository_id")
+  analysisType AnalysisType   @map("analysis_type")
+  status       AnalysisStatus @default(PENDING)
+  
+  // Results stored as JSON
+  result       Json?          // Analysis results
+  error        String?        // Error message if failed
+  
+  // Timestamps
+  createdAt    DateTime       @default(now()) @map("created_at")
+  completedAt  DateTime?      @map("completed_at")
+  
+  // Relations
+  repository   Repository     @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  @@index([repositoryId])
+  @@index([analysisType])
+  @@index([status])
+  @@map("analyses")
+}
+
+enum AnalysisType {
+  ARCHITECTURE
+  TECHNICAL_DEBT
+  COMPLEXITY
+  DUPLICATION
+  SECURITY
+  PERFORMANCE
+  DEPENDENCIES
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ============================================
+// AI CHAT SYSTEM
+// ============================================
+
+model ChatConversation {
+  id           String   @id @default(uuid())
+  repositoryId String   @map("repository_id")
+  userId       String   @map("user_id")
+  title        String?
+  
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  repository   Repository    @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages     ChatMessage[]
+  
+  @@index([repositoryId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id             String           @id @default(uuid())
+  conversationId String           @map("conversation_id")
+  role           ChatMessageRole
+  content        String           @db.Text
+  
+  // Metadata stored as JSON
+  metadata       Json?            // { referencedFiles, codeSnippets, tokens, etc. }
+  
+  // Timestamps
+  createdAt      DateTime         @default(now()) @map("created_at")
+  
+  // Relations
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+enum ChatMessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ============================================
+// ARCHITECTURE VISUALIZATION
+// ============================================
+
+model ArchitectureMap {
+  id           String   @id @default(uuid())
+  repositoryId String   @map("repository_id")
+  
+  // React Flow data stored as JSON
+  nodes        Json     // Array of nodes
+  edges        Json     // Array of edges
+  metadata     Json?    // Layout info, statistics, etc.
+  
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  @@index([repositoryId])
+  @@map("architecture_maps")
+}
+
+// ============================================
+// TECHNICAL DEBT ANALYSIS
+// ============================================
+
+model TechnicalDebtReport {
+  id           String   @id @default(uuid())
+  repositoryId String   @map("repository_id")
+  
+  // Scores (0-100, where 100 is perfect)
+  overallScore      Int      @map("overall_score")
+  complexityScore   Int      @map("complexity_score")
+  duplicationScore  Int      @map("duplication_score")
+  dependencyScore   Int      @map("dependency_score")
+  maintainabilityScore Int   @map("maintainability_score")
+  securityScore     Int      @map("security_score")
+  
+  // Issues stored as JSON
+  issues       Json     // Array of issues with severity, category, file, line, etc.
+  metrics      Json?    // Detailed metrics
+  
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  @@index([repositoryId])
+  @@index([overallScore])
+  @@map("technical_debt_reports")
+}
+
+// ============================================
+// DOCUMENTATION GENERATION
+// ============================================
+
+model GeneratedDocumentation {
+  id           String          @id @default(uuid())
+  repositoryId String          @map("repository_id")
+  docType      DocumentationType @map("doc_type")
+  title        String
+  content      String          @db.Text
+  format       DocumentFormat  @default(MARKDOWN)
+  
+  // Timestamps
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  
+  // Relations
+  repository   Repository      @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  @@index([repositoryId])
+  @@index([docType])
+  @@map("generated_documentation")
+}
+
+enum DocumentationType {
+  README
+  API_REFERENCE
+  ARCHITECTURE
+  ONBOARDING
+  CHANGELOG
+  CONTRIBUTING
+}
+
+enum DocumentFormat {
+  MARKDOWN
+  HTML
+  PDF
+}
+
+// ============================================
+// ONBOARDING INTELLIGENCE
+// ============================================
+
+model OnboardingPath {
+  id            String   @id @default(uuid())
+  repositoryId  String   @map("repository_id")
+  
+  // Learning path stored as JSON
+  phases        Json     // Array of phases with steps
+  estimatedTime String   @map("estimated_time")
+  prerequisites Json?    // Array of prerequisites
+  
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  repository    Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  @@index([repositoryId])
+  @@map("onboarding_paths")
+}
+
+// ============================================
+// SYSTEM LOGS & AUDIT
+// ============================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  action    String
+  resource  String
+  resourceId String? @map("resource_id")
+  metadata  Json?
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================
+// API KEYS & TOKENS
+// ============================================
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  name        String
+  key         String   @unique
+  lastUsedAt  DateTime? @map("last_used_at")
+  expiresAt   DateTime? @map("expires_at")
+  
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([key])
+  @@map("api_keys")
+}
+
+// ============================================
+// USAGE TRACKING
+// ============================================
+
+model UsageMetric {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  metricType   String   @map("metric_type")
+  value        Float
+  metadata     Json?
+  
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([metricType])
+  @@index([createdAt])
+  @@map("usage_metrics")
+}
+
+// ============================================
+// SEARCH HISTORY
+// ============================================
+
+model SearchHistory {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  repositoryId String   @map("repository_id")
+  query        String
+  searchType   SearchType @map("search_type")
+  resultsCount Int      @map("results_count")
+  
+  // Search options stored as JSON
+  options      Json?    // { caseSensitive, wholeWord, regex, filePattern, etc. }
+  
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([repositoryId])
+  @@index([createdAt])
+  @@map("search_history")
+}
+
+enum SearchType {
+  CODE
+  FUNCTION
+  CLASS
+  IMPORT
+  TODO
+  REPOSITORY
+}
+
+// ============================================
+// COMPARISON HISTORY
+// ============================================
+
+model ComparisonHistory {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  comparisonType  ComparisonType @map("comparison_type")
+  
+  // Repository IDs stored as JSON array
+  repositoryIds   Json     @map("repository_ids")
+  
+  // Comparison results stored as JSON
+  results         Json
+  similarityScore Float?   @map("similarity_score")
+  
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@map("comparison_history")
+}
+
+enum ComparisonType {
+  TWO_WAY
+  MULTI_WAY
+  TRENDS
+  BENCHMARK
+}
+
+// ============================================
+// SHARE LINKS
+// ============================================
+
+model ShareLink {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  repositoryId String   @map("repository_id")
+  shareId      String   @unique @map("share_id")
+  resourceType ShareResourceType @map("resource_type")
+  
+  // Shared data stored as JSON
+  data         Json
+  
+  // Access control
+  accessCount  Int      @default(0) @map("access_count")
+  maxAccess    Int?     @map("max_access")
+  expiresAt    DateTime? @map("expires_at")
+  isActive     Boolean  @default(true) @map("is_active")
+  
+  // Timestamps
+  createdAt    DateTime @default(now()) @map("created_at")
+  lastAccessedAt DateTime? @map("last_accessed_at")
+  
+  @@index([userId])
+  @@index([repositoryId])
+  @@index([shareId])
+  @@index([expiresAt])
+  @@map("share_links")
+}
+
+enum ShareResourceType {
+  REPOSITORY_EXPORT
+  ANALYSIS_REPORT
+  COMPARISON_REPORT
+  EXECUTIVE_SUMMARY
+}
+
+// Made with Bob

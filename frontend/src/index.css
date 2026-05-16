@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-dark-700;
+  }
+  
+  body {
+    @apply font-sans;
+  }
+  
+  code {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-dark-900 rounded;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-dark-600 rounded hover:bg-dark-500;
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-dark-900/50 backdrop-blur-md border border-dark-700/50;
+  }
+  
+  .glass-hover {
+    @apply glass hover:bg-dark-800/60 hover:border-dark-600/50 transition-all duration-300;
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+  
+  /* Card styles */
+  .card {
+    @apply bg-dark-900 border border-dark-700 rounded-lg p-6 shadow-lg;
+  }
+  
+  .card-hover {
+    @apply card hover:border-primary-500/50 hover:shadow-glow transition-all duration-300;
+  }
+  
+  /* Button base styles */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 hover:bg-primary-700 text-white shadow-lg hover:shadow-glow;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-dark-800 hover:bg-dark-700 text-white border border-dark-600;
+  }
+  
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-dark-800 text-dark-300 hover:text-white;
+  }
+  
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-2 bg-dark-900 border border-dark-700 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-dark-700 border-t-primary-500;
+  }
+  
+  /* Code block */
+  .code-block {
+    @apply bg-dark-950 border border-dark-800 rounded-lg p-4 overflow-x-auto custom-scrollbar;
+  }
+  
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary-500/20 text-primary-400 border border-primary-500/30;
+  }
+  
+  .badge-success {
+    @apply badge bg-green-500/20 text-green-400 border border-green-500/30;
+  }
+  
+  .badge-warning {
+    @apply badge bg-yellow-500/20 text-yellow-400 border border-yellow-500/30;
+  }
+  
+  .badge-error {
+    @apply badge bg-red-500/20 text-red-400 border border-red-500/30;
+  }
+}
+
+@layer utilities {
+  /* Animation delays */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* React Flow custom styles */
+.react-flow__node {
+  @apply bg-dark-900 border-2 border-dark-700 rounded-lg shadow-lg;
+}
+
+.react-flow__node.selected {
+  @apply border-primary-500 shadow-glow;
+}
+
+.react-flow__edge-path {
+  @apply stroke-dark-600;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  @apply stroke-primary-500;
+}
+
+.react-flow__controls {
+  @apply bg-dark-900 border border-dark-700 rounded-lg shadow-lg;
+}
+
+.react-flow__controls-button {
+  @apply bg-dark-800 border-dark-700 text-white hover:bg-dark-700;
+}
+
+/* Markdown styles */
+.markdown {
+  @apply text-dark-200;
+}
+
+.markdown h1 {
+  @apply text-3xl font-bold mb-4 text-white;
+}
+
+.markdown h2 {
+  @apply text-2xl font-bold mb-3 text-white;
+}
+
+.markdown h3 {
+  @apply text-xl font-bold mb-2 text-white;
+}
+
+.markdown p {
+  @apply mb-4 leading-relaxed;
+}
+
+.markdown ul,
+.markdown ol {
+  @apply mb-4 ml-6;
+}
+
+.markdown li {
+  @apply mb-2;
+}
+
+.markdown code {
+  @apply bg-dark-950 px-1.5 py-0.5 rounded text-primary-400 text-sm font-mono;
+}
+
+.markdown pre {
+  @apply bg-dark-950 border border-dark-800 rounded-lg p-4 mb-4 overflow-x-auto custom-scrollbar;
+}
+
+.markdown pre code {
+  @apply bg-transparent p-0 text-dark-200;
+}
+
+.markdown a {
+  @apply text-primary-400 hover:text-primary-300 underline;
+}
+
+.markdown blockquote {
+  @apply border-l-4 border-primary-500 pl-4 italic text-dark-300 mb-4;
+}
+
+.markdown table {
+  @apply w-full mb-4 border-collapse;
+}
+
+.markdown th {
+  @apply bg-dark-800 border border-dark-700 px-4 py-2 text-left font-semibold;
+}
+
+.markdown td {
+  @apply border border-dark-700 px-4 py-2;
+}
+
+/* Made with Bob */
