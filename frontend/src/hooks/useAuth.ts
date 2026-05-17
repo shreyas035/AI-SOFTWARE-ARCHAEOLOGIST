@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -70,25 +70,35 @@ export function useAuth() {
   });
 
   // Get current user query
-  const { data: currentUser, isLoading: isLoadingUser } = useQuery({
+  const { data: currentUser, isLoading: isLoadingUser, error: queryError } = useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
       const response = await authApi.getCurrentUser();
-      return response.data as User;
+      // Usually authApi returns { success: true, data: user }
+      return (response.data?.data || response.data) as User;
     },
     enabled: !!token && !user,
     retry: false,
-    onSuccess: (data) => {
-      useAuthStore.getState().setUser(data);
+  });
+
+  // Handle successful user fetch
+  useEffect(() => {
+    if (currentUser) {
+      useAuthStore.getState().setUser(currentUser);
       setLoading(false);
-    },
-    onError: () => {
+    }
+  }, [currentUser, setLoading]);
+
+  // Handle fetch error
+  useEffect(() => {
+    if (queryError) {
       setLogout();
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('auth-storage');
       setLoading(false);
-    },
-  });
+    }
+  }, [queryError, setLogout, setLoading]);
 
   const login = useCallback(
     (email: string, password: string) => {
