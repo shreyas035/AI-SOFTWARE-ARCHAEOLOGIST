@@ -16,6 +16,13 @@ router.use(authenticate);
  */
 router.get('/:repositoryId', documentationController.getDocumentation);
 
+/**
+ * @route   POST /api/v1/documentation/:repositoryId/generate
+ * @desc    Generate documentation for a repository
+ * @access  Private
+ */
+router.post('/:repositoryId/generate', documentationController.generateDocumentation);
+
 export default router;
 
 // Made with Bob

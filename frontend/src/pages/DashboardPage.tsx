@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FolderGit2, Plus, TrendingUp, Clock, Code } from 'lucide-react';
+import { FolderGit2, Plus, TrendingUp, Clock, Code, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { repositoryApi } from '@services/api';
@@ -27,12 +27,15 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-          <p className="text-dark-400">Welcome back! Here's your code archaeology overview.</p>
+          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <Sparkles className="w-8 h-8 text-primary-400" />
+            Archaeologist Dashboard
+          </h1>
+          <p className="text-dark-400">Welcome back, Shreyas! Ready to discover more ancient code civilizations?</p>
         </div>
         <Link to="/repositories">
           <Button variant="primary" leftIcon={<Plus className="w-5 h-5" />}>
-            New Repository
+            New Excavation
           </Button>
         </Link>
       </div>
@@ -44,13 +47,13 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card variant="glass">
+          <Card className="border-primary-500/20 bg-gradient-to-br from-primary-500/10 to-transparent p-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary-500/20 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary-500/20 rounded-lg flex items-center justify-center border border-primary-500/30">
                 <FolderGit2 className="w-6 h-6 text-primary-400" />
               </div>
               <div>
-                <p className="text-dark-400 text-sm">Total Repositories</p>
+                <p className="text-dark-400 text-sm">Active Artifacts</p>
                 <p className="text-2xl font-bold text-white">{formatNumber(repositories.length)}</p>
               </div>
             </div>

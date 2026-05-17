@@ -31,6 +31,8 @@ apiClient.interceptors.request.use(
 );
 
 // Response interceptor - Handle errors
+let isRedirecting = false;
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<{ message?: string; error?: string }>) => {
@@ -38,11 +40,15 @@ apiClient.interceptors.response.use(
 
     // Handle specific error codes
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-      toast.error('Session expired. Please login again.');
+      if (!isRedirecting) {
+        isRedirecting = true;
+        // Unauthorized - clear token, user and zustand persistent storage, then redirect
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth-storage');
+        window.location.href = '/login';
+        toast.error('Session expired. Please login again.');
+      }
     } else if (error.response?.status === 403) {
       toast.error('You do not have permission to perform this action.');
     } else if (error.response?.status === 404) {

@@ -9,6 +9,7 @@ import AuthLayout from '@components/layouts/AuthLayout';
 // Pages
 import LoginPage from '@pages/auth/LoginPage';
 import RegisterPage from '@pages/auth/RegisterPage';
+import LandingPage from '@pages/LandingPage';
 import DashboardPage from '@pages/DashboardPage';
 import RepositoriesPage from '@pages/RepositoriesPage';
 import RepositoryDetailPage from '@pages/RepositoryDetailPage';
@@ -16,6 +17,7 @@ import AnalysisPage from '@pages/AnalysisPage';
 import ArchitecturePage from '@pages/ArchitecturePage';
 import ChatPage from '@pages/ChatPage';
 import DocumentationPage from '@pages/DocumentationPage';
+import OnboardingPage from '@pages/OnboardingPage';
 import SettingsPage from '@pages/SettingsPage';
 import SearchPage from '@pages/SearchPage';
 import ComparisonPage from '@pages/ComparisonPage';
@@ -112,6 +114,16 @@ function App() {
         }
       />
 
+      {/* Landing Page */}
+      <Route
+        path="/welcome"
+        element={
+          <PublicRoute>
+            <LandingPage />
+          </PublicRoute>
+        }
+      />
+
       {/* Protected Routes */}
       <Route
         path="/"
@@ -125,10 +137,11 @@ function App() {
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="repositories" element={<RepositoriesPage />} />
         <Route path="repositories/:id" element={<RepositoryDetailPage />} />
-        <Route path="repositories/:id/analysis" element={<AnalysisPage />} />
-        <Route path="repositories/:id/architecture" element={<ArchitecturePage />} />
-        <Route path="repositories/:id/chat" element={<ChatPage />} />
-        <Route path="repositories/:id/documentation" element={<DocumentationPage />} />
+        <Route path="analysis/:id" element={<AnalysisPage />} />
+        <Route path="architecture/:id" element={<ArchitecturePage />} />
+        <Route path="chat/:id" element={<ChatPage />} />
+        <Route path="documentation/:id" element={<DocumentationPage />} />
+        <Route path="onboarding/:id" element={<OnboardingPage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="comparison" element={<ComparisonPage />} />
         <Route path="export" element={<ExportPage />} />

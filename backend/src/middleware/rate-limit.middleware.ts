@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit';
 import logger from '../config/logger';
 
 const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'); // 15 minutes
-const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100');
+const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000');
 
 /**
  * General API rate limiter
@@ -33,7 +33,7 @@ export const apiLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 requests per window
+  max: 100, // 100 requests per window (generous for demos)
   message: {
     success: false,
     error: 'Too many authentication attempts, please try again later',

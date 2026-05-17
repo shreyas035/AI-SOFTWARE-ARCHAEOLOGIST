@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   FolderGit2, Code, Calendar, Package, ArrowLeft, FileCode,
   GitBranch, Loader2, Sparkles, BarChart3, Shield, Zap,
-  AlertTriangle, CheckCircle, Info, Eye
+  AlertTriangle, CheckCircle, Info, Eye, MessageSquare, Map, Compass
 } from 'lucide-react';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -121,6 +121,28 @@ export default function RepositoryDetailPage() {
               </span>
             </div>
           </div>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="secondary" onClick={() => navigate(`/chat/${id}`)}>
+            <MessageSquare className="w-4 h-4 mr-2" />
+            AI Chat
+          </Button>
+          <Button variant="secondary" onClick={() => navigate(`/architecture/${id}`)}>
+            <Map className="w-4 h-4 mr-2" />
+            Explorer
+          </Button>
+          <Button variant="secondary" onClick={() => navigate(`/analysis/${id}`)}>
+            <Shield className="w-4 h-4 mr-2" />
+            Risk Scan
+          </Button>
+          <Button variant="secondary" onClick={() => navigate(`/documentation/${id}`)}>
+            <Sparkles className="w-4 h-4 mr-2" />
+            Docs
+          </Button>
+          <Button variant="primary" onClick={() => navigate(`/onboarding/${id}`)}>
+            <Compass className="w-4 h-4 mr-2" />
+            Onboarding
+          </Button>
         </div>
       </div>
 
