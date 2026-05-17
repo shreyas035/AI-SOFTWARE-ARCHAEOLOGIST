@@ -84,7 +84,16 @@ router.get('/onboarding/:repositoryId', async (req, res, next) => {
       return;
     }
 
-    res.json({ success: true, data: path });
+    const phases = path.phases as any;
+    res.json({
+      success: true,
+      data: {
+        id: path.id,
+        title: phases?.title || 'New Developer Onboarding',
+        steps: phases?.steps || [],
+        estimatedTime: path.estimatedTime
+      }
+    });
   } catch (error) {
     next(error);
   }

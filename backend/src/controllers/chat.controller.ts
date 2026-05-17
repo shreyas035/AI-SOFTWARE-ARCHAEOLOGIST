@@ -173,9 +173,8 @@ export class ChatController {
       res.write('data: {"type":"done"}\n\n');
       res.end();
 
-      logger.info('Message stream completed', { userId, conversationId: data.conversationId });
     } catch (error) {
-      logger.error('Message stream error', { error, userId });
+      logger.error('Message stream error', { error, userId: req.user?.id });
       
       // Send error as SSE
       res.write(`data: ${JSON.stringify({ type: 'error', content: 'Stream failed' })}\n\n`);

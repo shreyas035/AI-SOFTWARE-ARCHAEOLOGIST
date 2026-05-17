@@ -38,9 +38,8 @@ export class DocumentationService {
 
       if (!repository) throw new Error('Repository not found');
 
-      // Use local summary generator for base context
       const metadata = repository.metadata as any;
-      const baseSummary = await this.summaryGenerator.generateSummary(metadata);
+      const baseSummary = this.summaryGenerator.generateSummary(repository.name, metadata);
       
       let content = '';
       let title = '';

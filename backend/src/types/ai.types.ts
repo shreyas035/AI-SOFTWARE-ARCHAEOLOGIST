@@ -149,6 +149,8 @@ export interface BobAIResponse {
     totalTokens: number;
   };
   finishReason?: string;
+  referencedFiles?: string[];
+  codeSnippets?: any[];
 }
 
 export interface BobAIStreamChunk {

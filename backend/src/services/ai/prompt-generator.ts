@@ -134,7 +134,6 @@ Your task is to answer the developer's question accurately and helpfully. Focus 
 
     prompt += `# Question\n\n${query}\n\n`;
 
-    // Add type-specific instructions
     const typeInstructions: Record<PromptType, string> = {
       'code-explanation': 'Please explain how this code works, including the flow of execution and key components.',
       'architecture-analysis': 'Please analyze the architecture of this system, including its structure, patterns, and design decisions.',
@@ -142,6 +141,7 @@ Your task is to answer the developer's question accurately and helpfully. Focus 
       documentation: 'Please generate comprehensive documentation for this code, including usage examples and explanations.',
       onboarding: 'Please create an onboarding guide to help new developers understand and navigate this codebase.',
       'general-query': 'Please answer this question based on the codebase provided.',
+      'executive-summary': 'Please provide a high-level executive summary of the repository, including key systems, tech stack, and risk areas.',
     };
 
     prompt += `${typeInstructions[type]}`;

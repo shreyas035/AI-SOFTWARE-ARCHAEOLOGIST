@@ -1,3 +1,5 @@
+import { PrismaClient } from '@prisma/client';
+import { ImportAnalyzer } from './import-analyzer';
 import { FileTreeNode, ImportRelationship } from '../../types/repository.types';
 import logger from '../../config/logger';
 
@@ -16,6 +18,56 @@ export interface ArchitectureEdge {
 }
 
 export class ArchitectureMapper {
+  private prisma?: PrismaClient;
+  private importAnalyzer: ImportAnalyzer;
+
+  constructor(prisma?: PrismaClient) {
+    this.prisma = prisma;
+    this.importAnalyzer = new ImportAnalyzer();
+  }
+
+  /**
+   * On-demand generation and storage of architecture map
+   */
+  async generateArchitectureMap(repositoryId: string): Promise<void> {
+    if (!this.prisma) throw new Error('Prisma client not configured');
+
+    const repo = await this.prisma.repository.findUnique({
+      where: { id: repositoryId }
+    });
+
+    if (!repo) throw new Error('Repository not found');
+
+    const fileTree = (repo.metadata as any)?.fileTree;
+    if (!fileTree) throw new Error('No file tree metadata found');
+
+    const relationships = await this.importAnalyzer.analyzeRelationships(fileTree, repo.filePath);
+    const { nodes, edges } = this.mapToGraph(fileTree, relationships);
+
+    const existing = await this.prisma.architectureMap.findFirst({
+      where: { repositoryId }
+    });
+
+    if (existing) {
+      await this.prisma.architectureMap.update({
+        where: { id: existing.id },
+        data: {
+          nodes: nodes as any,
+          edges: edges as any,
+          metadata: { relationshipCount: relationships.length } as any
+        }
+      });
+    } else {
+      await this.prisma.architectureMap.create({
+        data: {
+          repositoryId,
+          nodes: nodes as any,
+          edges: edges as any,
+          metadata: { relationshipCount: relationships.length } as any
+        }
+      });
+    }
+  }
   /**
    * Generates nodes and edges for React Flow visualization
    */

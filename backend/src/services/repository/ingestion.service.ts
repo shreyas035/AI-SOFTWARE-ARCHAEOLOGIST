@@ -224,8 +224,10 @@ export class RepositoryIngestionService {
         await this.prisma.onboardingPath.create({
           data: {
             repositoryId,
-            title: 'New Developer Onboarding',
-            steps: steps as any,
+            phases: {
+              title: 'New Developer Onboarding',
+              steps: steps,
+            } as any,
             estimatedTime: steps.reduce((acc, s) => acc + parseInt(s.estimatedTime), 0) + ' min',
           }
         });

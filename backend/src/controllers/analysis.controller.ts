@@ -50,7 +50,7 @@ export class AnalysisController {
         .then(() => {
           logger.info('Architecture analysis completed', { repositoryId });
         })
-        .catch((error) => {
+        .catch((error: any) => {
           logger.error('Architecture analysis failed', { error, repositoryId });
         });
 

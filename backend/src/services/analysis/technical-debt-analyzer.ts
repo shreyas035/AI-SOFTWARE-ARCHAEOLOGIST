@@ -587,14 +587,16 @@ export class TechnicalDebtAnalyzer {
     return recommendations;
   }
 
-  /**
-   * Save report to database
-   */
   private async saveReport(repositoryId: string, report: TechnicalDebtReport): Promise<void> {
     await this.prisma.technicalDebtReport.create({
       data: {
         repositoryId,
         overallScore: report.score.overall,
+        complexityScore: report.score.complexity,
+        duplicationScore: report.score.duplication,
+        dependencyScore: report.score.dependencies,
+        maintainabilityScore: report.score.maintainability,
+        securityScore: report.score.security,
         issues: report.issues as any,
         metrics: report.metrics as any,
       },
